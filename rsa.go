@@ -105,7 +105,7 @@ const (
   RSA_NO_PADDING    = C.RSA_NO_PADDING
 )
 
-func PrivateDecrypt(from []byte, pem string, padding int) ([]byte, error) {
+func privateDecrypt(from []byte, pem string, padding int) ([]byte, error) {
   var to *C.char = nil
 
   if n := C.rsa_private_decrypt(C.int(len(from)),
@@ -122,7 +122,7 @@ func PrivateDecrypt(from []byte, pem string, padding int) ([]byte, error) {
   }
 }
 
-func PublicEncrypt(from []byte, pem string, padding int) ([]byte, error) {
+func publicEncrypt(from []byte, pem string, padding int) ([]byte, error) {
   var to *C.char = nil
 
   if n := C.rsa_public_encrypt(C.int(len(from)),
@@ -139,7 +139,7 @@ func PublicEncrypt(from []byte, pem string, padding int) ([]byte, error) {
   }
 }
 
-func PublicDecrypt(from []byte, pem string, padding int) ([]byte, error) {
+func publicDecrypt(from []byte, pem string, padding int) ([]byte, error) {
   var to *C.char = nil
 
   if n := C.rsa_public_decrypt(C.int(len(from)),
@@ -156,7 +156,7 @@ func PublicDecrypt(from []byte, pem string, padding int) ([]byte, error) {
   }
 }
 
-func PrivateEncrypt(from []byte, pem string, padding int) ([]byte, error) {
+func privateEncrypt(from []byte, pem string, padding int) ([]byte, error) {
   var to *C.char = nil
 
   if n := C.rsa_private_encrypt(C.int(len(from)),
@@ -186,8 +186,8 @@ func init() {
 ///////////////////////////////////////////////////////////////////////////////
 
 type Public interface {
-  Encrypt(data []byte) ([]byte, error)
-  Decrypt(data []byte) ([]byte, error)
+  encrypt(data []byte) ([]byte, error)
+  decrypt(data []byte) ([]byte, error)
 }
 
 type rsaPublicKey struct {
@@ -195,16 +195,16 @@ type rsaPublicKey struct {
   slice_size int
 }
 
-func loadPublicKey(path string, slice_size int) (sshKey Public) {
+func LoadPublicKey(path string, slice_size int) (sshKey Public) {
   sshKey = &rsaPublicKey{path, slice_size}
   return
 }
 
-func (pub *rsaPublicKey) Encrypt(data []byte) ([]byte, error) {
+func (pub *rsaPublicKey) encrypt(data []byte) ([]byte, error) {
   var encrypted []byte
   arrayText := sliceLongData(data, pub.slice_size)
   for index := 0; index < len(arrayText); index++ {
-    tmp, err := PublicEncrypt(arrayText[index], pub.path, RSA_PKCS1_PADDING)
+    tmp, err := publicEncrypt(arrayText[index], pub.path, RSA_PKCS1_PADDING)
     if err != nil {
       return nil, err
     }
@@ -214,11 +214,11 @@ func (pub *rsaPublicKey) Encrypt(data []byte) ([]byte, error) {
   return encrypted, nil
 }
 
-func (pub *rsaPublicKey) Decrypt(data []byte) ([]byte, error) {
+func (pub *rsaPublicKey) decrypt(data []byte) ([]byte, error) {
   var decrypted []byte
   arrayText := sliceLongData(data, pub.slice_size*2)
   for index := 0; index < len(arrayText); index++ {
-    tmp, err := PublicDecrypt(arrayText[index], pub.path, RSA_PKCS1_PADDING)
+    tmp, err := publicDecrypt(arrayText[index], pub.path, RSA_PKCS1_PADDING)
     if err != nil {
       return nil, err
     }
@@ -233,8 +233,8 @@ func (pub *rsaPublicKey) Decrypt(data []byte) ([]byte, error) {
 ///////////////////////////////////////////////////////////////////////////////
 
 type Private interface {
-  Encrypt(data []byte) ([]byte, error)
-  Decrypt(data []byte) ([]byte, error)
+  encrypt(data []byte) ([]byte, error)
+  decrypt(data []byte) ([]byte, error)
 }
 
 type rsaPrivateKey struct {
@@ -242,16 +242,16 @@ type rsaPrivateKey struct {
   slice_size int
 }
 
-func loadPrivateKey(path string, slice_size int) (sshKey Private) {
+func LoadPrivateKey(path string, slice_size int) (sshKey Private) {
   sshKey = &rsaPrivateKey{path, slice_size}
   return
 }
 
-func (priv *rsaPrivateKey) Encrypt(data []byte) ([]byte, error) {
+func (priv *rsaPrivateKey) encrypt(data []byte) ([]byte, error) {
   var encrypted []byte
   arrayText := sliceLongData(data, priv.slice_size)
   for index := 0; index < len(arrayText); index++ {
-    tmp, err := PrivateEncrypt(arrayText[index], priv.path, RSA_PKCS1_PADDING)
+    tmp, err := privateEncrypt(arrayText[index], priv.path, RSA_PKCS1_PADDING)
     if err != nil {
       return nil, err
     }
@@ -261,11 +261,11 @@ func (priv *rsaPrivateKey) Encrypt(data []byte) ([]byte, error) {
   return encrypted, nil
 }
 
-func (priv *rsaPrivateKey) Decrypt(data []byte) ([]byte, error) {
+func (priv *rsaPrivateKey) decrypt(data []byte) ([]byte, error) {
   var decrypted []byte
   arrayText := sliceLongData(data, priv.slice_size*2)
   for index := 0; index < len(arrayText); index++ {
-    tmp, err := PrivateDecrypt(arrayText[index], priv.path, RSA_PKCS1_PADDING)
+    tmp, err := privateDecrypt(arrayText[index], priv.path, RSA_PKCS1_PADDING)
     if err != nil {
       return nil, err
     }
@@ -284,12 +284,12 @@ func sliceLongData(data []byte, sizeOfSlice int) [][]byte {
 	var numberOfSlice = int(math.Ceil(float64(len(data)) / float64(sizeOfSlice)))
 
 	for cpt := 0; cpt < numberOfSlice; cpt++ {
-		arrayBytes = append(arrayBytes, data[(sizeOfSlice*cpt):int(Min((sizeOfSlice*(cpt+1)), len(data)))])
+		arrayBytes = append(arrayBytes, data[(sizeOfSlice*cpt):int(min((sizeOfSlice*(cpt+1)), len(data)))])
 	}
 	return arrayBytes
 }
 
-func Min(x, y int) int {
+func min(x, y int) int {
     if x < y {
         return x
     }
