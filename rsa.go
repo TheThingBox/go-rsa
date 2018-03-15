@@ -96,7 +96,6 @@ package rsa
   }
 */
 import "C"
-import "errors"
 import "math"
 import "unsafe"
 import "fmt"
