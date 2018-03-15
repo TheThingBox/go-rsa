@@ -1,10 +1,10 @@
 package main
 
 import (
-	  "encoding/base64"
-	  "github.com/TheThingBox/go-rsa"
-    "fmt"
-    "os"
+	"encoding/base64"
+	"github.com/TheThingBox/go-rsa"
+	"fmt"
+	"os"
 )
 
 func main() {
