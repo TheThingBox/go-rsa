@@ -186,8 +186,8 @@ func init() {
 ///////////////////////////////////////////////////////////////////////////////
 
 type Public interface {
-  encrypt(data []byte) ([]byte, error)
-  decrypt(data []byte) ([]byte, error)
+  Encrypt(data []byte) ([]byte, error)
+  Decrypt(data []byte) ([]byte, error)
 }
 
 type rsaPublicKey struct {
@@ -200,7 +200,7 @@ func LoadPublicKey(path string, slice_size int) (sshKey Public) {
   return
 }
 
-func (pub *rsaPublicKey) encrypt(data []byte) ([]byte, error) {
+func (pub *rsaPublicKey) Encrypt(data []byte) ([]byte, error) {
   var encrypted []byte
   arrayText := sliceLongData(data, pub.slice_size)
   for index := 0; index < len(arrayText); index++ {
@@ -214,7 +214,7 @@ func (pub *rsaPublicKey) encrypt(data []byte) ([]byte, error) {
   return encrypted, nil
 }
 
-func (pub *rsaPublicKey) decrypt(data []byte) ([]byte, error) {
+func (pub *rsaPublicKey) Decrypt(data []byte) ([]byte, error) {
   var decrypted []byte
   arrayText := sliceLongData(data, pub.slice_size*2)
   for index := 0; index < len(arrayText); index++ {
@@ -233,8 +233,8 @@ func (pub *rsaPublicKey) decrypt(data []byte) ([]byte, error) {
 ///////////////////////////////////////////////////////////////////////////////
 
 type Private interface {
-  encrypt(data []byte) ([]byte, error)
-  decrypt(data []byte) ([]byte, error)
+  Encrypt(data []byte) ([]byte, error)
+  Decrypt(data []byte) ([]byte, error)
 }
 
 type rsaPrivateKey struct {
@@ -247,7 +247,7 @@ func LoadPrivateKey(path string, slice_size int) (sshKey Private) {
   return
 }
 
-func (priv *rsaPrivateKey) encrypt(data []byte) ([]byte, error) {
+func (priv *rsaPrivateKey) Encrypt(data []byte) ([]byte, error) {
   var encrypted []byte
   arrayText := sliceLongData(data, priv.slice_size)
   for index := 0; index < len(arrayText); index++ {
@@ -261,7 +261,7 @@ func (priv *rsaPrivateKey) encrypt(data []byte) ([]byte, error) {
   return encrypted, nil
 }
 
-func (priv *rsaPrivateKey) decrypt(data []byte) ([]byte, error) {
+func (priv *rsaPrivateKey) Decrypt(data []byte) ([]byte, error) {
   var decrypted []byte
   arrayText := sliceLongData(data, priv.slice_size*2)
   for index := 0; index < len(arrayText); index++ {
