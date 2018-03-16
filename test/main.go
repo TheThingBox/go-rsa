@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/base64"
-	"github.com/TheThingBox/go-rsa"
+	"github.com/TheThingBox/go-rsa/rsa"
 	"fmt"
 	"os"
 )
